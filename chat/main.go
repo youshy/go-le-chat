@@ -10,6 +10,10 @@ import (
 	"sync"
 
 	"github.com/go-le-chat/trace"
+	"github.com/stretchr/gomniauth"
+	"github.com/stretchr/gomniauth/providers/facebook"
+	"github.com/stretchr/gomniauth/providers/github"
+	"github.com/stretchr/gomniauth/providers/google"
 )
 
 // templ represents a single template
@@ -30,6 +34,15 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func main() {
 	var addr = flag.String("h", ":8080", "The host of the application")
 	flag.Parse() // parse incoming flags
+
+	// setup gomniauth
+	// TODO set the env var
+	gomniauth.SetSecurityKey("SECURITY KEY GOES HERE")
+	gomniauth.WithProviders(
+		facebook.New("key", "secret", "http://localhost:8080/auth/callback/facebook"),
+		github.New("key", "secret", "http://localhost:8080/auth/callback/github"),
+		google.New("key", "secret", "http://localhost:8080/auth/callback/google"),
+	)
 
 	r := newRoom()
 	// if there's a need to mute the tracer
